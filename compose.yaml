@@ -16,6 +16,8 @@ services:
       interval: 20s
       timeout: 10s
       retries: 5
+    networks:
+      - dokploy-network
 
   dashboard:
     image: python:3.12-slim
@@ -34,6 +36,13 @@ services:
     command: ["sh", "-c", "pip install --no-cache-dir -r requirements.txt && streamlit run main.py --server.port=8501 --server.address=0.0.0.0 --server.enableCORS=false"]
     ports:
       - "8501:8501"
+    networks:
+      - dokploy-network
+  
 
 volumes:
   db_data:
+
+networks:
+  dokploy-network:
+    external: true
