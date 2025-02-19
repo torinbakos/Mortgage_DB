@@ -13,9 +13,9 @@ services:
       - "3306:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 30s
+      interval: 20s
       timeout: 10s
-      retries: 3
+      retries: 5
 
   dashboard:
     image: python:3.12-slim
@@ -24,22 +24,16 @@ services:
       db:
         condition: service_healthy
     environment:
-      MYSQL_HOST: db
-      MYSQL_PORT: 3306
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - ./dashboard:/dashboard
-    command: ["sh", "-c", "pip install --no-cache-dir -r requirements.txt && streamlit run main.py"]
-
+    command: ["sh", "-c", "pip install --no-cache-dir -r requirements.txt && streamlit run main.py --server.port=8501 --server.address=0.0.0.0"]
     ports:
       - "8501:8501"
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8501/_stcore/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 volumes:
   db_data:
